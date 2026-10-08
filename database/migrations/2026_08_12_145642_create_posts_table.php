@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('slug')->unique();
             $table->text('content');
+            $table->string('image_path')->nullable();
             $table->string('type')->default('kegiatan');
             $table->enum('visibility', ['public', 'private'])->default('public');
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();

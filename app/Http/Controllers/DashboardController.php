@@ -11,17 +11,20 @@ class DashboardController extends Controller
     public function index()
     {
         $user = auth()->user();
-        
+        $privatePosts = Post::where('visibility', 'private')->latest()->get();
+        $programs = \App\Models\Program::latest()->take(5)->get();
+        $upcomingAgendas = \App\Models\Agenda::where('start_date', '>=', now()->toDateString())->orderBy('start_date')->take(3)->get();
+
         if ($user->role === 'anggota') {
-            $privatePosts = Post::where('visibility', 'private')->latest()->get();
-            return view('dashboard', compact('privatePosts'));
+            return view('dashboard', compact('privatePosts', 'programs', 'upcomingAgendas'));
         }
         
         $stats = [
             'total_posts' => Post::count(),
-            'public_posts' => Post::where('visibility', 'public')->count(),
-            'private_posts' => Post::where('visibility', 'private')->count(),
+            'total_drafts' => Post::where('status', 'draft')->count(),
+            'total_agendas' => \App\Models\Agenda::count(),
+            'total_aums' => \App\Models\Aum::count(),
         ];
-        return view('dashboard', compact('stats'));
+        return view('dashboard', compact('stats', 'privatePosts', 'programs', 'upcomingAgendas'));
     }
 }

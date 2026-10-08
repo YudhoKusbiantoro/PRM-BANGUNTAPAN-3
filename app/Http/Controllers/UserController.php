@@ -13,6 +13,27 @@ class UserController extends Controller
         return view('dashboard.users.index', compact('users'));
     }
 
+    public function create()
+    {
+        return view('dashboard.users.create');
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'role' => 'required|in:admin,pengurus,anggota',
+        ]);
+
+        $validated['password'] = \Illuminate\Support\Facades\Hash::make($validated['password']);
+
+        User::create($validated);
+
+        return redirect()->route('users.index')->with('success', 'Pengguna berhasil ditambahkan.');
+    }
+
     public function edit(User $user)
     {
         return view('dashboard.users.edit', compact('user'));

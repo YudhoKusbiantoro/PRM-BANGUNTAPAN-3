@@ -8,15 +8,22 @@ use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $posts = Post::latest()->paginate(10);
-        return view('dashboard.posts.index', compact('posts'));
+        $search = $request->query('search');
+        
+        $posts = Post::when($search, function ($query, $search) {
+            return $query->where('title', 'like', '%' . $search . '%')
+                         ->orWhere('content', 'like', '%' . $search . '%');
+        })->latest()->paginate(10)->withQueryString();
+        
+        return view('dashboard.posts.index', compact('posts', 'search'));
     }
 
     public function create()
     {
-        return view('dashboard.posts.create');
+        $categories = \App\Models\Category::all();
+        return view('dashboard.posts.create', compact('categories'));
     }
 
     public function store(Request $request)
@@ -24,12 +31,19 @@ class PostController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
-            'type' => 'required|string|in:berita,lazismu,info,pengumuman,kegiatan',
+            'type' => 'required|string|in:berita,kegiatan,agenda',
+            'category_id' => 'nullable|exists:categories,id',
             'visibility' => 'required|in:public,private',
+            'image' => 'nullable|image|max:2048',
+            'status' => 'required|in:draft,published',
         ]);
 
         $validated['slug'] = Str::slug($validated['title']) . '-' . time();
         $validated['user_id'] = auth()->id();
+
+        if ($request->hasFile('image')) {
+            $validated['image_path'] = $request->file('image')->store('posts', 'public');
+        }
 
         Post::create($validated);
 
@@ -43,7 +57,8 @@ class PostController extends Controller
 
     public function edit(Post $post)
     {
-        return view('dashboard.posts.edit', compact('post'));
+        $categories = \App\Models\Category::all();
+        return view('dashboard.posts.edit', compact('post', 'categories'));
     }
 
     public function update(Request $request, Post $post)
@@ -51,9 +66,19 @@ class PostController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
-            'type' => 'required|string|in:berita,lazismu,info,pengumuman,kegiatan',
+            'type' => 'required|string|in:berita,kegiatan,agenda',
+            'category_id' => 'nullable|exists:categories,id',
             'visibility' => 'required|in:public,private',
+            'image' => 'nullable|image|max:2048',
+            'status' => 'required|in:draft,published',
         ]);
+
+        if ($request->hasFile('image')) {
+            if ($post->image_path) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($post->image_path);
+            }
+            $validated['image_path'] = $request->file('image')->store('posts', 'public');
+        }
 
         $post->update($validated);
 
@@ -62,6 +87,9 @@ class PostController extends Controller
 
     public function destroy(Post $post)
     {
+        if ($post->image_path) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($post->image_path);
+        }
         $post->delete();
         return redirect()->route('posts.index')->with('success', 'Konten berhasil dihapus.');
     }

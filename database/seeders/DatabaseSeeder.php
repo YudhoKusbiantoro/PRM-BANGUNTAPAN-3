@@ -63,5 +63,20 @@ class DatabaseSeeder extends Seeder
             'visibility' => 'private',
             'user_id' => $admin->id
         ]);
+
+        // Default Settings
+        $settings = [
+            ['key' => 'site_name', 'value' => 'PRM Banguntapan 3', 'type' => 'text'],
+            ['key' => 'contact_email', 'value' => 'info@prmbanguntapan3.id', 'type' => 'email'],
+            ['key' => 'contact_phone', 'value' => '+62 812 3456 7890', 'type' => 'text'],
+            ['key' => 'address', 'value' => 'Sorowajan, Banguntapan, Bantul', 'type' => 'textarea'],
+            ['key' => 'about_text', 'value' => 'Pimpinan Ranting Muhammadiyah Banguntapan 3 terus berkomitmen memberdayakan umat...', 'type' => 'textarea'],
+            ['key' => 'sejarah_singkat', 'value' => 'Berdiri sebagai tonggak dakwah Muhammadiyah di tingkat akar rumput, membawa misi pencerahan dan pembaharuan (tajdid) di Banguntapan.', 'type' => 'textarea'],
+            ['key' => 'visi_misi', 'value' => 'Menjadi ranting yang unggul dalam pembinaan iman, ilmu, dan amal, serta menjadi rujukan gerakan kemasyarakatan yang berkemajuan.', 'type' => 'textarea'],
+        ];
+
+        foreach ($settings as $setting) {
+            \App\Models\Setting::create($setting);
+        }
     }
 }

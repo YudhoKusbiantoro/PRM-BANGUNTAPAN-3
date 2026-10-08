@@ -25,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Gate::define('pengurus', function (User $user) {
-            return in_array($user->role, ['admin', 'pengurus']);
+            return $user->role === 'pengurus';
         });
 
         Gate::define('anggota', function (User $user) {
