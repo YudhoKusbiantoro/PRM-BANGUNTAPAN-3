@@ -202,5 +202,44 @@
                 });
             });
         </script>
+
+        <!-- Flash Messages with SweetAlert2 -->
+        @if(session('success'))
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: '{{ session('success') }}',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        customClass: {
+                            popup: 'rounded-[2rem] shadow-2xl border border-gray-100',
+                            title: 'font-extrabold text-gray-900'
+                        }
+                    });
+                });
+            </script>
+        @endif
+
+        @if(session('error'))
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: '{{ session('error') }}',
+                        showConfirmButton: true,
+                        confirmButtonColor: '#ef4444',
+                        customClass: {
+                            popup: 'rounded-[2rem] shadow-2xl border border-gray-100',
+                            title: 'font-extrabold text-gray-900',
+                            confirmButton: 'font-bold rounded-xl px-6 py-2.5'
+                        }
+                    });
+                });
+            </script>
+        @endif
     </body>
 </html>
