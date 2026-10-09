@@ -7,3 +7,6 @@ Berikut adalah spesifikasi versi yang dibutuhkan:
 - **Laravel Framework**: `^13.8`
 
 Pastikan server atau perangkat lokal Anda sudah memenuhi persyaratan minimum di atas sebelum melakukan instalasi.
+
+## USE CASE
+<img width="3612" height="4024" alt="image" src="https://github.com/user-attachments/assets/b395cb7e-fafd-46ff-9c6d-378af30d59b4" />
